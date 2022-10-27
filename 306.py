@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[31]:
 
 
 from bs4 import BeautifulSoup
@@ -12,7 +12,7 @@ import database as db
 month_regex = r'\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\s\d+'
 
 
-# In[4]:
+# In[32]:
 
 
 url = 'https://linktr.ee/BKCB6Calendar'
@@ -21,32 +21,7 @@ soup = BeautifulSoup(page.text,'html.parser')
 buttons = soup.find(class_='sc-bdfBwQ jrDHLp').find_all(True, recursive=False)
 
 
-# In[5]:
-
-
-t1 = buttons[0].find(class_='sc-iktFzd gaGeRK')
-#buttons[0]
-#t1
-a_tag = t1.find('a', href=True) 
-print(a_tag['href']) 
-
-
-# In[6]:
-
-
-a_tag = t1.find('a', href=True) 
-print(a_tag['href']) 
-
-
-# In[7]:
-
-
-text = t1.find(class_='sc-hKgILt sc-iUuytg gXKGT esdhrP').text
-title = re.search('\d+\s(.+)', text).group(1)
-title
-
-
-# In[8]:
+# In[33]:
 
 
 # events_dict[i] = {
@@ -61,7 +36,7 @@ events_dict = {}
 for i,button in enumerate(buttons):
     title = None
     date = None
-    #time = None
+    time = None
     details = None
     
     t1 = button.find(class_='sc-iktFzd gaGeRK')
@@ -75,49 +50,44 @@ for i,button in enumerate(buttons):
     page = requests.get(url)
     soup = BeautifulSoup(page.text,'html.parser')
     text_content_cells = soup.find_all(class_="text_content-cell content-padding-horizontal")
-    for text_box in text_content_cells:
+    for i,text_box in enumerate(text_content_cells):
         if details is None:
                 details = text_box.text
              
         else:
             details = details + "\n" + text_box.text
+        
+        if re.search('((1[0-2]|0?[1-9]):([0-5][0-9]) ([AaPp].[Mm].))',text_box.text) and time is None:
+            time = re.search('((1[0-2]|0?[1-9]):([0-5][0-9]) ([AaPp].[Mm].))',text_box.text).group()
+            
+    if time is None:
+        time = 'N/A'
     
     events_dict[i] = {
         'date': date,
-        #'time':time,
+        'time':time,
         'title': title,
         'details':details
     }
     
-    print (f"Title: {title} \nDate: {date}\nDetails:{details}\n-----------------------\n")
+    #print (f"Title: {title} \nDate: {date} \nTime:{time} \nDetails:{details}\n-----------------------\n")
     
     
     
   
 
 
-# In[9]:
-
-
-url = str(t1.find('a', href=True)['href'])
-page = requests.get(url)
-soup = BeautifulSoup(page.text,'html.parser')
-text = str(soup.find(class_="text_content-cell content-padding-horizontal").text)
-text = print(text)
-#text
-
-
-# In[3]:
+# In[34]:
 
 
 database = db.Database(306)
 
 
-# In[17]:
+# In[35]:
 
 
 for event in events_dict.values():
-    database.addRow(title = event['title'], date = event['date'] , details = event['details'], time = 'N/A')
+    database.addRow(title = event['title'], date = event['date'] , details = event['details'], time = event['time'])
 
 
 # In[ ]:
