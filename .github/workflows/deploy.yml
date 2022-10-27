@@ -22,6 +22,7 @@ jobs:
         run: |
           pip install beautifulsoup4 requests sqlalchemy
           python 306.py
+          python 307.py
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.7.1
