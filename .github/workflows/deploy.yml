@@ -23,6 +23,12 @@ jobs:
           pip install beautifulsoup4 requests sqlalchemy
           python 306.py
           python 307.py
+          python 102.py
+          python 104.py
+          python 105.py
+          python 108.py
+          python 110.py
+          python 112.py
       - name: Commit updates
         uses: EndBug/add-and-commit@v9
         with:

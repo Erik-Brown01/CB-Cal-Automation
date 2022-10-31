@@ -47,6 +47,8 @@ class Database():
         self.district = district
         
     def addRow(self, title, date, details, time):
+        """appends an event to the existing database 
+        """
         row = self.Event(title = title, date = date, details = details, district = self.district, time = time)
         self.session.add(row)
         self.session.commit()
@@ -54,6 +56,11 @@ class Database():
     def getAllRows(self):
         return list(self.session.query(self.Event))
     
+    def getDistrictRows(self, district = None):
+        if district is None:
+            district = self.district
+            
+        return list(self.session.query(self.Event).filter(self.Event.district == district))
 
 
 # In[9]:
