@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import unicodedata
 import requests
 import re
-import database as db
+import lib.database as db
 
 
 # In[2]:
