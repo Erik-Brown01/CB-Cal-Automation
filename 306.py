@@ -8,8 +8,8 @@ from bs4 import BeautifulSoup
 import unicodedata
 import requests
 import re
-import database as db
-month_regex = r'\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|(Nov|Dec)(?:ember)?)\s\d+'
+import lib.database as db
+from lib.reconst import MONTH_REGEX
 
 
 # In[32]:
@@ -43,7 +43,7 @@ for i,button in enumerate(buttons):
     
     if title == None and date == None:
         text = t1.find(class_='sc-hKgILt sc-iUuytg gXKGT esdhrP').text
-        date = re.search(month_regex, text).group()
+        date = re.search(MONTH_REGEX, text).group()
         title = re.search('\d+\s(.+)', text).group(1)
      
     url = str(t1.find('a', href=True)['href'])
