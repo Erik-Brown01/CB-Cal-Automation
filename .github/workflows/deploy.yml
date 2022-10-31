@@ -8,7 +8,7 @@ on:
     # Use https://crontab.guru/ to figure out what this means.
     #
     # * is a special character in YAML so you have to quote this string
-    - cron:  '00 */2 * * *'
+    - cron:  '0 4 * * *'
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -23,11 +23,12 @@ jobs:
           pip install beautifulsoup4 requests sqlalchemy
           python 306.py
           python 307.py
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+      - name: Commit updates
+        uses: EndBug/add-and-commit@v9
         with:
-          # https://docs.github.com/en/free-pro-team@latest/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
+          author_name: bot
+          author_email: bot@example.com
+          message: "Update events.db"
+          add: "*.db"
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: main # The branch the action should deploy to.
-          FOLDER: .
