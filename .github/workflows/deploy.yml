@@ -30,7 +30,6 @@ jobs:
           python 110.py
           python 112.py
           python 310.py
-          python 311.py
           python 317.py
       - name: Commit updates
         uses: EndBug/add-and-commit@v9
