@@ -7,6 +7,7 @@
 from sqlalchemy import create_engine, Column, String, Integer, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import delete
 
 
 # In[8]:
@@ -61,6 +62,21 @@ class Database():
             district = self.district
             
         return list(self.session.query(self.Event).filter(self.Event.district == district))
+    
+    def addDictionary(self, events_dict):
+        for event in events_dict.values():
+            self.addRow(title = event['topic'], date = event['date'] , details = event['description'], time = event['time'])
+            
+    def deleteDistrictEvents(self, district = None):
+        if district == None:
+            district = self.district
+#         stmt = (
+#             delete(Event)
+#             .where(Event.district == district)
+#             .execution_options(synchronize_session="fetch")
+#         )
+        self.session.query(self.Event).filter(self.Event.district == district).delete(synchronize_session="fetch")
+        self.session.commit()
 
 
 # In[9]:

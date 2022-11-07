@@ -21,14 +21,15 @@ jobs:
       - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
         run: |
           pip install beautifulsoup4 requests sqlalchemy icalendar
-          python 306.py
-          python 307.py
           python 102.py
           python 104.py
           python 105.py
           python 108.py
           python 110.py
+          python 111.py
           python 112.py
+          python 306.py
+          python 307.py
           python 310.py
           python 317.py
       - name: Commit updates
