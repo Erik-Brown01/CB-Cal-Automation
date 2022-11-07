@@ -32,7 +32,7 @@ def airtable_scraper(url):
     chrome_options.add_argument('--disable-dev-shm-usage')
     prefs = {"download.default_directory" : os.getcwd()}
     chrome_options.add_experimental_option("prefs",prefs)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = webdriver.Chrome(service=service, options=chrome_options, executable_path=(str(os.getcwd()) + 'chromedriver.exe'))
     
     driver.get(url)
 
