@@ -20,7 +20,6 @@ import lib.ical_scraper as icalscr
 
 url = 'https://calendar.google.com/calendar/ical/queenscb6secretary@gmail.com/public/basic.ics'
 events_dict = icalscr.ical_scraper(url)
-events_dict
 
 
 # In[3]:
