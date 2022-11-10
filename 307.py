@@ -79,7 +79,7 @@ for i,block in enumerate(blocks):
     'details':details
     }
                 
-    print(events_dict)
+#    print(events_dict)
     #print (f"Title: {title} \nDate: {date}\nTime: {time}\nDetails:{details}\n-----------------------\n")
     
 #         date = where tag == 'p'
