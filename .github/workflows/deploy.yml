@@ -25,13 +25,20 @@ jobs:
           python 104.py
           python 105.py
           python 108.py
+          python 109.py
           python 110.py
           python 111.py
           python 112.py
+          python 302.py
+          python 303.py
+          python 305.py
           python 306.py
           python 307.py
+          python 308.py
           python 310.py
           python 317.py
+          python 406.py
+          python 413.py
       - name: Commit updates
         uses: EndBug/add-and-commit@v9
         with:
