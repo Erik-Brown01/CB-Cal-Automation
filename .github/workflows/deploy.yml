@@ -35,6 +35,7 @@ jobs:
           python 307.py
           python 308.py
           python 310.py
+          python 311.py
           python 317.py
           python 406.py
           python 413.py

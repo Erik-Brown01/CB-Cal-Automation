@@ -33,8 +33,8 @@ database = db.Database(311)
 # In[7]:
 
 
-for event in events_dict.values():
-    database.addRow(title = event['topic'], date = event['date'] , details = event['description'], time = event['time'])
+database.deleteDistrictEvents()
+database.addDictionary(events_dict)
 
 
 # In[ ]:
