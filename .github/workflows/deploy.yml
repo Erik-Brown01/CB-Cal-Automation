@@ -22,12 +22,17 @@ jobs:
         run: |
           pip install beautifulsoup4 requests sqlalchemy icalendar selenium pandas webdriver-manager
           python 102.py
+          python 103.py
           python 104.py
           python 105.py
+          python 106.py
+          python 107.py
           python 108.py
           python 109.py
           python 110.py
           python 112.py
+          python 206.py
+          python 209.py
           python 302.py
           python 303.py
           python 305.py
