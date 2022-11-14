@@ -44,7 +44,7 @@ for i,button in enumerate(buttons):
     if title == None and date == None:
         text = t1.find(class_='sc-hKgILt sc-iUuytg gXKGT esdhrP').text
         date = re.search(MONTH_REGEX, text).group()
-        title = re.search('\d+\s(.+)', text).group(1)
+        title = re.search('\d+(\w+)?\s(.+)', text).group(2)
      
     url = str(t1.find('a', href=True)['href'])
     page = requests.get(url)
@@ -73,11 +73,6 @@ for i,button in enumerate(buttons):
     #print (f"Title: {title} \nDate: {date} \nTime:{time} \nDetails:{details}\n-----------------------\n")
     
     
-    
-  
-
-
-# In[34]:
 
 
 database = db.Database(306)
