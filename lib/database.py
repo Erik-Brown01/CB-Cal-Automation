@@ -55,19 +55,27 @@ class Database():
         self.session.commit()
         
     def getAllRows(self):
+        """returns all events in the database 
+        """
         return list(self.session.query(self.Event))
     
     def getDistrictRows(self, district = None):
+        """returns all events of a given district. If no district is given then returns all rows for the district which the database was initialized with
+        """
         if district is None:
             district = self.district
             
         return list(self.session.query(self.Event).filter(self.Event.district == district))
     
     def addDictionary(self, events_dict):
+        """appends a dictionary of events to an existing database. The keys of the dictionary should be: topic, date, description, and time
+        """
         for event in events_dict.values():
             self.addRow(title = event['topic'], date = event['date'] , details = event['description'], time = event['time'])
             
     def deleteDistrictEvents(self, district = None):
+        """deletes all events of a given district from an existing database. If no district is given then deletes rows for the district which the database was initialized with
+        """
         if district == None:
             district = self.district
 #         stmt = (
@@ -77,6 +85,11 @@ class Database():
 #         )
         self.session.query(self.Event).filter(self.Event.district == district).delete(synchronize_session="fetch")
         self.session.commit()
+        
+    def closeSession(self):
+        """closes an active connection to a database
+        """
+        self.session.close()
 
 
 # In[9]:
