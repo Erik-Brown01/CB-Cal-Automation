@@ -151,6 +151,7 @@ cython_debug/
 #.idea/
 
 *.ipynb
+!batch_runner.ipynb
 
 *.pdf
 
