@@ -154,18 +154,5 @@ def js_scraper(url):
     return events
 
 
-# In[4]:
-
-
-#js_scraper('https://www.nyc.gov/assets/brooklyncb1/js/calendar-events.js') #works
-#js_scraper('https://www.nyc.gov/assets/brooklyncb9/js/calendar-events.js') #doesnt work
-#js_scraper('https://www.nyc.gov/assets/brooklyncb12/js/pages/calendar-events.js') #doesnt works
-# js_scraper('https://www.nyc.gov/assets/queenscb5/js/calendar_events.js') #works
-#js_scraper('https://www.nyc.gov/assets/bronxcb2/js/calendar-events.js') #doesnt work
-
-
-# In[ ]:
-
-
 
 
