@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[1]:
-
-
+# %%
 from icalendar import Calendar, Event
 from urllib.request import urlopen 
 import urllib.request 
@@ -15,7 +12,7 @@ import re
 from datetime import datetime
 
 
-# In[2]:
+# %%
 
 
 def ical_scraper(ical):
@@ -87,7 +84,7 @@ def ical2eventList(ical):
     return events_dict
 
 
-# In[ ]:
+# %%
 
 
 

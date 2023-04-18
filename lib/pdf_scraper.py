@@ -1,80 +1,62 @@
-#!/usr/bin/env python
-# coding: utf-8
+# import PyPDF2
+# from pdf2image import convert_from_path
+# import cv2
+# import pytesseract
+# import matplotlib.pyplot as plt
+# import tabula 
+# import re
+# from PIL import Image, ImageFilter, ImageDraw
+# import numpy as np
+# import glob
+# import os
+# import pandas as pd
+# from selenium import webdriver
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.chrome.service import Service as ChromeService
+# from webdriver_manager.chrome import ChromeDriverManager
+# from datetime import datetime, date
+# from selenium.webdriver.chrome.options import Options
+# import requests
+# from bs4 import BeautifulSoup, NavigableString, Tag
+# import time as time_lib
+# import sys
 
-# In[1]:
-
-
-from pdf2image import convert_from_path
-import cv2
+import sys
+import PyPDF2
+import pdf2image
 import pytesseract
-import matplotlib.pyplot as plt
-import tabula 
-import re
-from PIL import Image, ImageFilter, ImageDraw
-import numpy as np
-import glob
+from PIL import Image
+import tabula
 import os
-import pandas as pd
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from datetime import datetime, date
-from selenium.webdriver.chrome.options import Options
+import sys
 import requests
+from datetime import datetime, date
 from bs4 import BeautifulSoup, NavigableString, Tag
-import time as time_lib
+import re
+import cv2
+import numpy as np
 
 
-# In[2]:
-
-
-def mark_region(image_path):
-    
-    im = cv2.imread(image_path)
-    img = Image.open(image_path)
-    width, height = img.size
-    max_w = width-100
-
-    gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    blur = cv2.GaussianBlur(gray, (9,9), 0)
-    thresh = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,11,30)
-
-    # Dilate to combine adjacent text contours
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9,9))
-    dilate = cv2.dilate(thresh, kernel, iterations=4)
-
-    # Find contours, highlight text areas, and extract ROIs
-    cnts = cv2.findContours(dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cnts = cnts[0] if len(cnts) == 2 else cnts[1]
-
-    line_items_coordinates = []
-    for c in cnts:
-        area = cv2.contourArea(c)
-        x,y,w,h = cv2.boundingRect(c)
-
-        if y >= 600 and x <= 1000:
-            if area > 10000:
-                image = cv2.rectangle(im, (x,y), (max_w, y+h), color=(255,0,255), thickness=3)
-                line_items_coordinates.append([(x,y), (max_w, y+h)])
-
-        if y >= 2400 and x<= 2000:
-            image = cv2.rectangle(im, (x,y), (max_w, y+h), color=(255,0,255), thickness=3)
-            line_items_coordinates.append([(x,y), (max_w, y+h)]) #Why Doesnt it just use w????
-
-
-    return image, line_items_coordinates
-
-
-# In[3]:
-
-
-#url = 'https://www.cb14brooklyn.com/category/meetings/'
-def pdf_scraper(url):
+def findCalendarPDFLink(url, month = None, year = None):
     link_scores = []
-    currentMonth = datetime.now().strftime('%B').lower()
-    currentMonth1 = datetime.now().strftime('%h').lower()
-    currentYear = datetime.today().year
+    
+    if year == None:   
+        currentYear = datetime.today().year
+
+    else:
+        currentYear = int(year)
+        
+    if month == None:
+        currentMonth = datetime.now().strftime('%B').lower()
+        currentMonth1 = datetime.now().strftime('%b').lower()
+        currentMonth2 = datetime.now().strftime('%m').lower()
+    else:
+        month_year_str = f"{month} {currentYear}"
+        month_dt = datetime.strptime(month_year_str, '%B %Y')
+        currentMonth = month_dt.strftime('%B').lower()
+        currentMonth1 = month_dt.strftime('%b').lower()
+        currentMonth2 = month_dt.strftime('%m').lower()
+        
     #convert the webpage to soup
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
@@ -87,9 +69,11 @@ def pdf_scraper(url):
         score = 0
         link = link.lower()
         if re.search(currentMonth, link):
-            score += 1
+            score += 5
         elif re.search(currentMonth1, link):
-            score += 1
+            score += 5
+        elif re.search(currentMonth2, link):
+            score += 2
         if re.search(str(currentYear), link):
             score += 1
         if re.search('calendar', link):
@@ -101,104 +85,131 @@ def pdf_scraper(url):
     pdf_url = links[index_max]
     if pdf_url.startswith('/'):
         pdf_url = 'https://www.nyc.gov' + pdf_url 
-    pdf_url
+
+    return pdf_url
 
 
-    # In[4]:
-
-
-    driver = webdriver.Chrome(ChromeDriverManager().install())
-    service = ChromeService(executable_path=ChromeDriverManager().install())
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
-    prefs = {"download.default_directory" : os.getcwd()}
-    chrome_options.add_experimental_option('prefs', {"download.default_directory" : os.getcwd(),
-    "download.prompt_for_download": False, #To auto download the file
-    "download.directory_upgrade": True,
-    "plugins.always_open_pdf_externally": True #It will not show PDF directly in chrome
-    })
-    driver = webdriver.Chrome(service=service, options=chrome_options, executable_path=(str(os.getcwd()) + 'chromedriver.exe'))
-    driver.get(pdf_url)
-    time_lib.sleep(5)
-    list_of_files = glob.glob(str(os.getcwd()) + '\\*.pdf') # * means all if need specific format then *.csv
-    pdf_cal = max(list_of_files, key=os.path.getctime)
-    driver.quit()
-
-    pdfs = pdf_cal
-    pages = convert_from_path(pdfs, 300)
-    jpg_pages = []
-
-    for i, page in enumerate(pages):
-        image_name = "Page_" + str(i) + ".jpg"  
-        page.save(image_name, "JPEG")
-        jpg_pages.append(image_name)
-
-
-    # In[8]:
-
-
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    max_score = 0
-    max_index = 0
-    max_page = 0
-    for page_index, page in enumerate(jpg_pages): 
-        pic,coordinates = mark_region(str(os.getcwd()) + '\\' + page)
-        texts = []
-        for c in coordinates:
-        # load the original image
-            image = cv2.imread(str(os.getcwd()) + '\\' + page)
-
-            # cropping image img = image[y0:y1, x0:x1]
-            img = image[c[0][1]:c[1][1], c[0][0]:c[1][0]]    
-
-            # convert the image to black and white for better OCR
-            ret,thresh1 = cv2.threshold(img,120,255,cv2.THRESH_BINARY)
-
-            # pytesseract image to string to get results
-            text = str(pytesseract.image_to_string(thresh1, config='--psm 6'))
-            texts.append(text.lower())
-        area_scores = []
-        for text in texts:
-            score = 0
-
-            #contains a number 1-30
-            nums = []
-            for i in range(1,32):
-                nums.append(str(i)+'\s')
-            for i in nums:
-                if re.search(i, text):
-                    score += 1
-
-            #contains a time
-            for time in re.findall(r'(1[0-2]|0?[1-9]):([0-5]?[0-9])(●?[ap]m)?',text):
-                score += 1
-
-            for dayOfWeek in re.findall(r'\b((mon|tues|wed(nes)?|thur(s)?|fri|sat(ur)?|sun)(day)?)\b',text):
-                score += 1
-
-            area_scores.append(score)
-
-        index_max = max(range(len(area_scores)), key=area_scores.__getitem__)
-        if area_scores[index_max] > max_score:
-            max_score = area_scores[index_max]
-            max_index = index_max
-            max_page = page_index
-
-
-    pic,coordinates = mark_region(str(os.getcwd()) + '\\' + jpg_pages[max_page])
-    c = coordinates[max_index]
+def download_pdf(url, filename=None):
+    response = requests.get(url)
     
+    if response.status_code != 200:
+        print(f"Failed to download the PDF. Status code: {response.status_code}")
+        return None
 
-    dfs = tabula.read_pdf(pdf_cal, pandas_options = {'header': None},  pages = max_page+1, area = [c[0][1]*72/300, c[0][0]*72/300, c[1][1]*72/300, c[1][0]*72/300], lattice = True)
-    os.remove(pdf_cal)
-    for page in jpg_pages:
-        os.remove(str(os.getcwd()) + '\\' + page)
-    return dfs
+    if filename is None:
+        filename = os.path.basename(url)
+        
+    pdf_path = os.path.join(os.getcwd(), filename)
+    with open(pdf_path, 'wb') as file:
+        file.write(response.content)
+        
+    print(f"PDF downloaded successfully as {filename}")
+    return pdf_path
+
+# Ensure the path to the tesseract executable is in your system's PATH variable
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+
+def is_calendar_section(text):
+    days_of_week = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    days_found = [day for day in days_of_week if day in text.lower()]
+
+    digit_count = len(re.findall(r'\d', text))
+
+    return (len(days_found) >= 5) or (digit_count >= 20)
 
 
 
+def is_calendar_contour(contour, img_width, img_height, img):
+    x, y, w, h = cv2.boundingRect(contour)
+    aspect_ratio = float(w) / h
+
+    # if not (0.5 < aspect_ratio < 2 and img_width * 0.5 < w < img_width * 0.95 and img_height * 0.5 < h < img_height * 0.95):
+    #     return False
+
+    cropped_image = img[y:y + h, x:x + w]
+    text = pytesseract.image_to_string(cropped_image)
+    print(text)
+
+    return is_calendar_section(text)
+
+def get_calendar_coordinates(image):
+    img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    calendar_contour = None
+    #print(contours)
+
+    for contour in contours:
+        if is_calendar_contour(contour, gray.shape[1], gray.shape[0], gray):
+            calendar_contour = contour
+            break
+
+    if calendar_contour is None:
+        return None
+
+    x, y, w, h = cv2.boundingRect(calendar_contour)
+
+    return {
+        'top': y,
+        'left': x,
+        'width': w,
+        'height': h,
+        'bottom': y + h,
+        'right': x + w
+    }
 
 
+def extract_calendar_from_pdf(pdf_path):
+    calendar_data = None
+
+    try:
+        pdf = PyPDF2.PdfFileReader(pdf_path)
+        num_pages = pdf.getNumPages()
+
+        for page in range(num_pages):
+            images = pdf2image.convert_from_path(pdf_path, first_page=page + 1, last_page=page + 1, dpi = 300)
+
+            for img in images:
+                coords = get_calendar_coordinates(img)
+                if coords:
+                    df = tabula.read_pdf(
+                        pdf_path,
+                         pandas_options = {'header': None},
+                        area=[
+                            coords['top']*72/300,
+                            coords['left']*72/300,
+                            coords['bottom']*72/300,
+                            coords['right']*72/300
+                        ],
+                        pages=page + 1,
+                        multiple_tables=False,
+                        lattice = True
+                    )[0]
+
+                    calendar_data = df
+                    break  # Stop looking for the calendar section after finding one
+
+            if calendar_data is not None:
+                break
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+    return calendar_data
+
+def pdf_scraper(url, month = None, year = None):
+    pdf_url = findCalendarPDFLink(url, month, year)
+    pdf_path = download_pdf(pdf_url)
+    calendar_data = extract_calendar_from_pdf(pdf_path)
+    if month == None:
+        month = datetime.now().strftime('%B').lower()
+    if year == None:
+        year = datetime.today().year
+    if calendar_data is not None:
+        return calendar_data, month, year
+    else:
+        print("Calendar not found.")
 

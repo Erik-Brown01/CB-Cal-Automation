@@ -1,20 +1,38 @@
 #!/usr/bin/env python
 # coding: utf-8
+# %%
 
-# In[1]:
+# %%
 
 
 from sqlalchemy import create_engine, Column, String, Integer, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import delete
+import os
 
 
-# In[8]:
+# %%
 
 
 class Database():
-    engine = create_engine("sqlite:///events.db")
+    #engine = create_engine("sqlite:///events.db")
+    
+    def createDatabase():
+        # Get the grandparent directory of the current script
+        grandparent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+        # Construct the database path in the "database" directory under the grandparent directory
+        db_name = 'events.db'
+        database_directory = os.path.join(grandparent_directory, 'database')
+        db_path = os.path.join(database_directory, db_name)
+
+        # Create the engine using the constructed database path
+        engine = create_engine(f'sqlite:///{db_path}')
+        
+        return engine
+    
+    engine = createDatabase()
     Session = sessionmaker(bind = engine)
     session = Session()
     
@@ -73,6 +91,10 @@ class Database():
         for event in events_dict.values():
             self.addRow(title = event['topic'], date = event['date'] , details = event['description'], time = event['time'])
             
+    def addListOfEvents(self, events_list):
+        for event in events_list:
+            self.addRow(title = event['topic'], date = event['date'] , details = event['description'], time = event['time'])
+    
     def deleteDistrictEvents(self, district = None):
         """deletes all events of a given district from an existing database. If no district is given then deletes rows for the district which the database was initialized with
         """
@@ -92,7 +114,7 @@ class Database():
         self.session.close()
 
 
-# In[9]:
+# %%
 
 
 if __name__ == '__main__':
@@ -101,7 +123,7 @@ if __name__ == '__main__':
     database.getAllRows()
 
 
-# In[ ]:
+# %%
 
 
 
