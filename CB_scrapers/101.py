@@ -46,7 +46,7 @@ for i, column in df.items():
 
 
 eventArray = list(set(eventArray))
-eventArray = filtered_list = [s for s in eventArray if s.split(' ')[0].isdigit() and int(s.split(' ')[0]) < 30]
+eventArray = [s for s in eventArray if s.split(' ')[0].isdigit() and int(s.split(' ')[0]) < 30]
 eventArray = [
     re.sub('\s{2,}', ' ', re.sub('\\r', ' ', test_str))
     for test_str in eventArray

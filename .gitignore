@@ -158,4 +158,5 @@ cython_debug/
 *.png
 
 *.jpg
-airtable_connection/.env.txt
+
+
