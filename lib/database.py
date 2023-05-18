@@ -23,7 +23,7 @@ class Database():
         grandparent_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
         # Construct the database path in the "database" directory under the grandparent directory
-        db_name = 'events.db'
+        db_name = 'eventsMay2023.db'
         database_directory = os.path.join(grandparent_directory, 'database')
         db_path = os.path.join(database_directory, db_name)
 

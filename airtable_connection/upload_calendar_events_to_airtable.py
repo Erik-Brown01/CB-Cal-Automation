@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 
 # Load environment variables from the .env file
-load_dotenv(r'C:\Users\ebroh\BetaNYC\CB-Cal-Automation\airtable_connection\.env.txt')
+load_dotenv()
 
 # SQLAlchemy database model
 Base = declarative_base()
@@ -32,7 +32,7 @@ session = DBSession()
 # Airtable API configuration
 AIRTABLE_API_KEY = os.environ['AIRTABLE_API_KEY']
 AIRTABLE_BASE_ID = os.environ['AIRTABLE_BASE_ID']
-AIRTABLE_TABLE_NAME = 'CalendarEvents'
+AIRTABLE_TABLE_NAME = 'MayEvents'
 
 airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=AIRTABLE_API_KEY)
 

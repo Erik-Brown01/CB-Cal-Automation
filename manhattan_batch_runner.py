@@ -30,3 +30,5 @@ for file in file_list:
     # Print the output of the executed script
     print("Output:", result.stdout)
     print("Errors:", result.stderr)
+
+
