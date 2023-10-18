@@ -6,7 +6,7 @@ Please explore [Block Party](https://blockparty.studio/) for a search through co
 
 ---
 
-The repo contains various scripts that scrape, parses, and standardize calendar formats for:
+The repo contains various scripts that scrape, parse, and standardize calendar formats for:
 
 - html
 - ical
